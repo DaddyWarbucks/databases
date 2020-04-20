@@ -351,13 +351,13 @@ export default (test: any, app: any, _errors: any, serviceName: string, idProp: 
 
         assert.strictEqual(data.length, 2, 'returned two entries');
         assert.strictEqual(data[0].age, 2, 'First entry age was updated');
-        assert.strictEqual(data[1].age, 2, 'Sceond entry age was updated');
+        assert.strictEqual(data[1].age, 2, 'Second entry age was updated');
 
-        await service.remove(dave[idProp], params);
-        await service.remove(david[idProp], params);
+        await service.remove(dave[idProp]);
+        await service.remove(david[idProp]);
       });
 
-      test('.patch multi query', async () => {
+      test('.patch multi query same', async () => {
         const service = app.service(serviceName);
         const params = {
           query: { age: { $lt: 10 } }
@@ -381,8 +381,36 @@ export default (test: any, app: any, _errors: any, serviceName: string, idProp: 
         assert.strictEqual(data[0].age, 2, 'First entry age was updated');
         assert.strictEqual(data[1].age, 2, 'Second entry age was updated');
 
-        await service.remove(dave[idProp], params);
-        await service.remove(david[idProp], params);
+        await service.remove(dave[idProp]);
+        await service.remove(david[idProp]);
+      });
+
+      test('.patch multi query changed', async () => {
+        const service = app.service(serviceName);
+        const params = {
+          query: { age: 10 }
+        };
+        const dave = await service.create({
+          name: 'Dave',
+          age: 10,
+          created: true
+        });
+        const david = await service.create({
+          name: 'David',
+          age: 10,
+          created: true
+        });
+
+        const data = await service.patch(null, {
+          age: 2
+        }, params);
+
+        assert.strictEqual(data.length, 2, 'returned two entries');
+        assert.strictEqual(data[0].age, 2, 'First entry age was updated');
+        assert.strictEqual(data[1].age, 2, 'Second entry age was updated');
+
+        await service.remove(dave[idProp]);
+        await service.remove(david[idProp]);
       });
 
       test('.patch + NotFound', async () => {

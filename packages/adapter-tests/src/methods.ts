@@ -235,6 +235,23 @@ export default (test: any, app: any, _errors: any, serviceName: string, idProp: 
         }
       });
 
+      test('.update + query + NotFound', async () => {
+        const dave = await service.create({ name: 'Dave' });
+        try {
+          await service.update(
+            dave[idProp],
+            { name: 'UpdatedDave' },
+            { query:  { name: 'NotDave' } }
+          );
+          throw new Error('Should never get here');
+        } catch (error) {
+          assert.strictEqual(error.name, 'NotFound',
+            'Error is a NotFound Feathers error'
+          );
+        }
+        await service.remove(dave[idProp]);
+      });
+
       test('.update + id + query id', async () => {
         const alice = await service.create({
           name: 'Alice',
@@ -362,7 +379,7 @@ export default (test: any, app: any, _errors: any, serviceName: string, idProp: 
 
         assert.strictEqual(data.length, 2, 'returned two entries');
         assert.strictEqual(data[0].age, 2, 'First entry age was updated');
-        assert.strictEqual(data[1].age, 2, 'Sceond entry age was updated');
+        assert.strictEqual(data[1].age, 2, 'Second entry age was updated');
 
         await service.remove(dave[idProp], params);
         await service.remove(david[idProp], params);
@@ -377,6 +394,23 @@ export default (test: any, app: any, _errors: any, serviceName: string, idProp: 
             'Error is a NotFound Feathers error'
           );
         }
+      });
+
+      test('.patch + query + NotFound', async () => {
+        const dave = await service.create({ name: 'Dave' });
+        try {
+          await service.patch(
+            dave[idProp],
+            { name: 'PatchedDave' },
+            { query:  { name: 'NotDave' } }
+          );
+          throw new Error('Should never get here');
+        } catch (error) {
+          assert.strictEqual(error.name, 'NotFound',
+            'Error is a NotFound Feathers error'
+          );
+        }
+        await service.remove(dave[idProp]);
       });
 
       test('.patch + id + query id', async () => {
